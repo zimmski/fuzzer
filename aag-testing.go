@@ -2,12 +2,15 @@ package main
 
 import (
 	"fmt"
-	"math/rand"
+	randMath "math/rand"
 	"strconv"
 	"time"
 
+	"github.com/zimmski/tavor/rand"
+	"github.com/zimmski/tavor/token"
 	"github.com/zimmski/tavor/token/aggregates"
 	"github.com/zimmski/tavor/token/expressions"
+	"github.com/zimmski/tavor/token/filters"
 	"github.com/zimmski/tavor/token/lists"
 	"github.com/zimmski/tavor/token/primitives"
 	"github.com/zimmski/tavor/token/sequences"
@@ -37,8 +40,30 @@ func main() {
 	inputID := lists.NewOne(
 		primitives.NewConstantInt(0),
 		primitives.NewConstantInt(1),
-		// TODO existingID can be negative
-		idSequence.ExistingItem(),
+		filters.NewFuncExpression(
+			idSequence.ExistingItem(),
+			func(r rand.Rand, tok token.Token) interface{} {
+				c := r.Int()%2 == 0
+
+				if c {
+					tok.Fuzz(r)
+				}
+
+				return c
+			},
+			func(state interface{}, tok token.Token) string {
+				if c, ok := state.(bool); (state == nil || ok) && c {
+					i, err := strconv.Atoi(tok.String())
+					if err != nil {
+						panic(err)
+					}
+
+					return strconv.Itoa(i + 1)
+				}
+
+				return tok.String()
+			},
+		),
 	)
 
 	input := lists.NewAll(
@@ -102,7 +127,7 @@ func main() {
 	doc := lists.NewAll(header, body)
 
 	// fuzz the document
-	r := rand.New(rand.NewSource(time.Now().UTC().UnixNano()))
+	r := randMath.New(randMath.NewSource(time.Now().UTC().UnixNano()))
 
 	// TODO make this somehow easier
 	idSequence.Reset()
