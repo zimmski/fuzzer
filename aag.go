@@ -40,7 +40,7 @@ func main() {
 	inputID := lists.NewOne(
 		primitives.NewConstantInt(0),
 		primitives.NewConstantInt(1),
-		filters.NewFuncExpression(
+		filters.NewFuncFilter(
 			idSequence.ExistingItem(),
 			func(r rand.Rand, tok token.Token) interface{} {
 				c := r.Int()%2 == 0
