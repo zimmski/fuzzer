@@ -1,22 +1,37 @@
-/*
-	comment
-*/
 // one line comment
+/*
+	this comment
+	can be multiple
+	lines
+	long
+	but can be inlined too
+*/
 /*
 
 Token = "Definition" 123 // Constant string and constant integer are concatenated
 AnotherToken = Token // AnotherToken uses the token "Token"
-MultiLineToken = "a",
-                      "b",
-                      "c"
+MultiLineToken = "a", // token definitions can have multiple lines if at the end of a line is a ","
+                 "b",
+                 "c" // no "," so the definition ends here
 
-Quoting "\"this is quoted\""
+Umläüte = "can be used since this files have to be in utf8"
+Quoting = "\"this is quoted\""
 
-Or = 1 | 2 | 3
 Optional = ["hey i am optional!"]
+Alternation = 1 | 2 | 3
+Grouping = ("old" | "new") "letter"
 
 RepeatAtLeastOnce = "repeat" +{"me"}
-Repeat = "repeat me" *{"or me"}
+OptionalRepeat = "repeat me" *{"or me"}
+
+*/
+/*
+
+Identifier attributes can be used in token definitions by prepending a "$" to their name and separate the token name from the attribute by a ".".
+
+Letters = *{Letter}
+Letter = "a" | "b" | "c"
+LetterCount = $Letter.Len // LetterLen holds the count of Letter token that exist in the document
 
 */
 /*
@@ -27,9 +42,9 @@ $Number = type: Integer
 Arithmetic = $Number "+" $Number
 
 $Id = type: Sequence,
-      start: 0.
+      start: 0,
       step: 2
-NextId = $Id.Next
+NextId = $Id.Next // .Next indicates the next value of the sequence
 
 */
 /*
@@ -38,7 +53,9 @@ Expressions can be used in the token definitions
 
 Sum = ${1 + 2 + 3} // Sum will be interpreted as 6
 
-SomeIdOrMore = $Id.Existing | ${Id.Existing + 1}
+SomeIdOrMore = $Id.Existing | ${Id.Existing + 1} // .Existing indicates an available value of the sequence in the whole document
+
+DoubleTheCount = ${Letter.Len + Letter.Len}
 
 */
 
@@ -48,11 +65,11 @@ $Id = type: Sequence,
 
 Doc = Header Body
 
-Header = ${Input.Count + Latch.Count + And.Count}, " " // M
-         $Input.Count " ", // I
-         $Latch.Count " " ,// L
-         $Output.Count " ", // O
-         $And.Count "\n"  // A
+Header = ${Input.Len + Latch.Len + And.Len}, " " // M
+         $Input.Len " ",                         // I
+         $Latch.Len " " ,                        // L
+         $Output.Len " ",                        // O
+         $And.Len "\n"                           // A
 
 Body = Inputs,
        Latches,
@@ -63,7 +80,7 @@ Inputs = *{Input}
 Input  = $Id.Next "\n"
 
 Latches = *{Latch}
-Latch   = $Id.Next " " $Id.Existing "\n"
+Latch   = $Id.Next " " ExistingId "\n"
 
 Outputs = *{Output}
 Output  = ExistingId "\n"
