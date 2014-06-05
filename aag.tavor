@@ -1,0 +1,74 @@
+/*
+	comment
+*/
+// one line comment
+/*
+
+Token = "Definition" 123 // Constant string and constant integer are concatenated
+AnotherToken = Token // AnotherToken uses the token "Token"
+MultiLineToken = "a",
+                      "b",
+                      "c"
+
+Quoting "\"this is quoted\""
+
+Or = 1 | 2 | 3
+Optional = ["hey i am optional!"]
+
+RepeatAtLeastOnce = "repeat" +{"me"}
+Repeat = "repeat me" *{"or me"}
+
+*/
+/*
+
+Special token can be defined by prepending a "$" to their name. Special token must have at least the "type" attribute.
+
+$Number = type: Integer
+Arithmetic = $Number "+" $Number
+
+$Id = type: Sequence,
+      start: 0.
+      step: 2
+NextId = $Id.Next
+
+*/
+/*
+
+Expressions can be used in the token definitions
+
+Sum = ${1 + 2 + 3} // Sum will be interpreted as 6
+
+SomeIdOrMore = $Id.Existing | ${Id.Existing + 1}
+
+*/
+
+$Id = type: Sequence,
+      start: 2,
+      step: 2
+
+Doc = Header Body
+
+Header = ${Input.Count + Latch.Count + And.Count}, " " // M
+         $Input.Count " ", // I
+         $Latch.Count " " ,// L
+         $Output.Count " ", // O
+         $And.Count "\n"  // A
+
+Body = Inputs,
+       Latches,
+       Outputs,
+       Ands
+
+Inputs = *{Input}
+Input  = $Id.Next "\n"
+
+Latches = *{Latch}
+Latch   = $Id.Next " " $Id.Existing "\n"
+
+Outputs = *{Output}
+Output  = ExistingId "\n"
+
+Ands = *{And}
+And  = $Id.Next " " ExistingId " " ExistingId "\n"
+
+ExistingId = $Id.Existing | ${Id.Existing + 1}
