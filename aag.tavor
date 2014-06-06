@@ -8,13 +8,13 @@
 */
 /*
 
-Token = "Definition" 123 // Everything is concatenated by default
-AnotherToken = Token // AnotherToken uses the token "Token"
+Token = "I am a constant string" 123 // "I am a constant string" is a constant string. 123 is a constant number. They will be parsed as is. Everything is concatenated by default. So "I am a constant string" and 123 are parsed as "I am a constant string123". Also a token definition ends at the new line.
+AnotherToken = Token // AnotherToken embeds the token "Token"
 MultiLineToken = "a", // token definitions can have multiple lines if at the end of a line is a ","
                  "b",
                  "c" // no "," so the definition ends here
 
-Umläüte = "can be used since this files have to be in utf8"
+Umläüt = "Umlauts can be used since this files have to be in utf8"
 Quoting = "\"this is quoted\""
 
 Alternation = 1 | 2 | 3
@@ -24,11 +24,14 @@ Grouping = ("old" | "new") "letter"
 Optional = "i am not optional" ?{"but hey i am optional!"}
 RepeatAtLeastOnce = "repeat" +{"me"}
 OptionalRepeat = "repeat me" *{"or me"}
+RepeatAtLeastTwice = "repeat" +2,{"me"}
+RepeatAtMostTenTimes = "repeat" +,10{"me"}
+RepeatTwoToTenTimes = "repeat" +2,10{"me"}
 
 */
 /*
 
-Identifier attributes can be used in token definitions by prepending a "$" to their name and separate the token name from the attribute by a ".".
+Token attributes can be used in token definitions by prepending a "$" to their name and separate the token name from the attribute by a ".".
 
 Letters = *{Letter}
 Letter = "a" | "b" | "c"
