@@ -1,14 +1,14 @@
 // one line comment
+/* this comment can be a single line */
 /*
-	this comment
-	can be multiple
+	or multiple
 	lines
 	long
-	but can be inlined too
+	and can be inlined too
 */
 /*
 
-Token = "Definition" 123 // Constant string and constant integer are concatenated
+Token = "Definition" 123 // Everything is concatenated by default
 AnotherToken = Token // AnotherToken uses the token "Token"
 MultiLineToken = "a", // token definitions can have multiple lines if at the end of a line is a ","
                  "b",
@@ -17,10 +17,11 @@ MultiLineToken = "a", // token definitions can have multiple lines if at the end
 Umläüte = "can be used since this files have to be in utf8"
 Quoting = "\"this is quoted\""
 
-Optional = ["hey i am optional!"]
 Alternation = 1 | 2 | 3
+SameAlternationAsShortage = [123]
 Grouping = ("old" | "new") "letter"
 
+Optional = "i am not optional" ?{"but hey i am optional!"}
 RepeatAtLeastOnce = "repeat" +{"me"}
 OptionalRepeat = "repeat me" *{"or me"}
 
@@ -58,12 +59,21 @@ SomeIdOrMore = $Id.Existing | ${Id.Existing + 1} // .Existing indicates an avail
 DoubleTheCount = ${Letter.Len + Letter.Len}
 
 */
+/*
+
+Naming convention for tokens
+- Token names have to start with a letter
+- Token names can only consist of letters, digits and "_"
+- Reserved token names are
++-> START - parsing of data will start from this token. Is required for every document.
+
+*/
 
 $Id = type: Sequence,
       start: 2,
       step: 2
 
-Doc = Header Body
+START = Header Body
 
 Header = ${Input.Len + Latch.Len + And.Len}, " " // M
          $Input.Len " ",                         // I
