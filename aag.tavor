@@ -17,10 +17,10 @@ Naming convention for tokens
 +-> START - parsing of data will start from this token. Is required for every format definition.
 
 Token = "I am a constant string" 123 // "I am a constant string" is a constant string. 123 is a constant number. They will be used as is. Everything is concatenated by default. So "I am a constant string" and 123 are parsed as "I am a constant string123".
-AnotherToken = Token     // AnotherToken embeds the token "Token".
-MultiLineToken = "a",     // Token definitions can have multiple lines if there is a comma at the end of the line.
+AnotherToken = Token // AnotherToken embeds the token "Token".
+MultiLineToken = "a", // Token definitions can have multiple lines if there is a comma at the end of the line.
                  "b",
-                 "c"         // There is no comma at the end of the line which means that this token definitions ends here.
+                 "c" // There is no comma at the end of the line which means that this token definitions ends here.
 
 Umläüt = "Umlauts can be used since these definitions have to be in utf8"
 Quoting = "\"this is quoted\"" // Backspaces is used as escape character.
@@ -97,10 +97,10 @@ DoubleTheCount = ${Letter.Count + Letter.Count}
 $Id = type: Sequence,
       start: 2,
       step: 2
-ExistingId = $Id.Existing | ${Id.Existing + 1} // +1 means a prepended NOT for this input
+ExistingId = $Id.Existing | ${Id.Existing + 1} // +1 means a appended NOT for this input
 
 START = Header,
-            Body
+        Body
 
 Header = ${Input.Count + Latch.Count + And.Count}, " " // M
          $Input.Count " ",                             // I
