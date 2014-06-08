@@ -45,10 +45,10 @@ Token attributes can be used in token definitions by prepending a dollar sign to
 
 Letters = *(Letter)
 Letter = "a" | "b" | "c"
-LetterCount = $Letter.Count // LetterCount then holds the count of Letter tokens that exist in the data
+LetterCount = $Letters.Count // LetterCount then holds the count of the repeater Letters
 
 Possible token attributes are:
-- Count - Holds the count of this token of the whole data.
+- Count - Holds the count of this token. Must be a repeater.
 
 */
 /*
@@ -102,21 +102,25 @@ ExistingId = $Id.Existing | ${Id.Existing + 1} // +1 means a appended NOT for th
 START = Header,
         Body
 
-Header = ${Input.Count + Latch.Count + And.Count}, " " // M
-         $Input.Count " ",                             // I
-         $Latch.Count " " ,                            // L
-         $Output.Count " ",                            // O
-         $And.Count "\n"                               // A
+Header = ${Inputs.Count + Latches.Count + Ands.Count}, " " // M
+         $Inputs.Count " ",                             // I
+         $Latches.Count " " ,                            // L
+         $Outputs.Count " ",                            // O
+         $Ands.Count "\n"                               // A
 
-Body = *(Input),
-       *(Latch),
-       *(Output),
-       *(And)
+Body = Inputs,
+       Latches,
+       Outputs,
+       Ands
 
+Inputs = *(Input)
 Input = $Id.Next "\n"
 
+Latches = *(Latch)
 Latch = $Id.Next " " ExistingId "\n"
 
+Outputs = *(Output)
 Output = ExistingId "\n"
 
+Ands = *(And)
 And = $Id.Next " " ExistingId " " ExistingId "\n"
