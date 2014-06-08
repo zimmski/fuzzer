@@ -56,7 +56,7 @@ Possible token attributes are:
 Special tokens can be defined by prepending a dollar sign to their name. Special tokens do not have a format on their right side like regular tokens, instead arguments written as key-value pairs, which are separated by a colon, define the token. At least the "type" argument must be defined.
 
 $Number = type: Int
-Arithmetic = $Number "+" $Number
+Arithmetic = Number "+" Number
 
 Possible arguments are
 - type - Defines the type of the token. Can be “Int” or “Sequence”
