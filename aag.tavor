@@ -3,20 +3,6 @@ $Id = type: Sequence,
       step: 2
 ExistingId = $Id.Existing | ${Id.Existing + 1} // +1 means a NOT for this input
 
-START = Header,
-        Body
-
-Header = ${Inputs.Count + Latches.Count + Ands.Count}, " " // M
-         $Inputs.Count " ",                                // I
-         $Latches.Count " " ,                              // L
-         $Outputs.Count " ",                               // O
-         $Ands.Count "\n"                                  // A
-
-Body = Inputs,
-       Latches,
-       Outputs,
-       Ands
-
 Inputs = *(Input)
 Input = $Id.Next "\n"
 
@@ -28,3 +14,19 @@ Output = ExistingId "\n"
 
 Ands = *(And)
 And = $Id.Next " " ExistingId " " ExistingId "\n"
+
+Header = "aag ",
+         ${Inputs.Count + Latches.Count + Ands.Count} " ", // M
+         $Inputs.Count " ",                                // I
+         $Latches.Count " " ,                              // L
+         $Outputs.Count " ",                               // O
+         $Ands.Count "\n"                                  // A
+
+Body = Inputs,
+       Latches,
+       Outputs,
+       Ands
+
+START = $Id.Reset,
+        Header,
+        Body
