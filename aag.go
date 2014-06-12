@@ -102,15 +102,16 @@ func main() {
 	)
 
 	// doc
-	doc := lists.NewAll(header, body)
+	doc := lists.NewAll(
+		idSequence.ResetItem(),
+		header,
+		body,
+	)
 
 	// fuzz the document
 	r := randMath.New(randMath.NewSource(time.Now().UTC().UnixNano()))
 
-	// TODO make this somehow easier
-	idSequence.Reset()
-
-	doc.Fuzz(r)
+	doc.FuzzAll(r)
 
 	// output
 	fmt.Print(doc.String())
