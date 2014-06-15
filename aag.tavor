@@ -1,19 +1,23 @@
 $Id = type: Sequence,
       start: 2,
       step: 2
-ExistingId = $Id.Existing | ${Id.Existing + 1} // +1 means a NOT for this input
+
+ExistingLiteral = 0, // false
+           | 1, // true
+           | $Id.Existing,
+           | ${Id.Existing + 1} // +1 means a NOT for this input
 
 Inputs = *(Input)
 Input = $Id.Next "\n"
 
 Latches = *(Latch)
-Latch = $Id.Next " " ExistingId "\n"
+Latch = $Id.Next " " ExistingLiteral "\n"
 
 Outputs = *(Output)
-Output = ExistingId "\n"
+Output = ExistingLiteral "\n"
 
 Ands = *(And)
-And = $Id.Next " " ExistingId " " ExistingId "\n"
+And = $Id.Next " " ExistingLiteral " " ExistingLiteral "\n"
 
 Header = "aag ",
          ${Inputs.Count + Latches.Count + Ands.Count} " ", // M
