@@ -3,7 +3,8 @@
 test:
 	for f in *.go; do \
 		echo "Build $$f" ; \
-		go build $$f ; \
+		go build -o binout -race $$f ; \
+		rm binout ; \
 	done
 
 	echo "Build tavor with race detection"
