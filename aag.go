@@ -18,6 +18,8 @@ import (
 	This is a fuzzer made using Tavor[https://github.com/zimmski/tavor].
 	It fuzzes the AAG ASCII format [http://fmv.jku.at/aiger/FORMAT].
 
+	TODO it is still incomplete!
+
 */
 
 func main() {
@@ -32,43 +34,43 @@ func main() {
 	nl := primitives.NewConstantString("\n")
 
 	// construct body parts
-	idSequence := sequences.NewSequence(2, 2)
+	literalSequence := sequences.NewSequence(2, 2)
 
-	inputID := lists.NewOne(
+	inputLiteral := lists.NewOne(
 		primitives.NewConstantInt(0),
 		primitives.NewConstantInt(1),
 		lists.NewOne(
-			idSequence.ExistingItem(),
-			expressions.NewAddArithmetic(idSequence.ExistingItem(), primitives.NewConstantInt(1)),
+			literalSequence.ExistingItem(),
+			expressions.NewAddArithmetic(literalSequence.ExistingItem(), primitives.NewConstantInt(1)),
 		),
 	)
 
 	input := lists.NewAll(
-		idSequence.Item(),
+		literalSequence.Item(),
 		nl,
 	)
 	inputList := lists.NewRepeat(input, 0, maxInputCount)
 
 	latch := lists.NewAll(
-		idSequence.Item(),
+		literalSequence.Item(),
 		ws,
-		inputID.Clone(),
+		inputLiteral.Clone(),
 		nl,
 	)
 	latchList := lists.NewRepeat(latch, 0, maxLatchCount)
 
 	output := lists.NewAll(
-		inputID.Clone(),
+		inputLiteral.Clone(),
 		nl,
 	)
 	outputList := lists.NewRepeat(output, 0, maxOutputCount)
 
 	and := lists.NewAll(
-		idSequence.Item(),
+		literalSequence.Item(),
 		ws,
-		inputID.Clone(),
+		inputLiteral.Clone(),
 		ws,
-		inputID.Clone(),
+		inputLiteral.Clone(),
 		nl,
 	)
 	andList := lists.NewRepeat(and, 0, maxAndCount)
@@ -103,7 +105,7 @@ func main() {
 
 	// doc
 	doc := lists.NewAll(
-		idSequence.ResetItem(),
+		literalSequence.ResetItem(),
 		header,
 		body,
 	)

@@ -1,23 +1,36 @@
-$Id = type: Sequence,
+/*
+
+  This is a format file for the Tavor fuzzer[https://github.com/zimmski/tavor].
+  It describes the AAG ASCII format [http://fmv.jku.at/aiger/FORMAT].
+
+  TODO it is still incomplete!
+  - AND definitions have to be acyclic
+  - M does not have to be exactly I + L + A there can be unused Literals
+  - Symbols table
+  - Comments
+
+*/
+
+$Literal = type: Sequence,
       start: 2,
       step: 2
 
 ExistingLiteral = 0, // false
            | 1, // true
-           | $Id.Existing,
-           | ${Id.Existing + 1} // +1 means a NOT for this input
+           | $Literal.Existing,
+           | ${Literal.Existing + 1} // +1 means a NOT for this input
 
 Inputs = *(Input)
-Input = $Id.Next "\n"
+Input = $Literal.Next "\n"
 
 Latches = *(Latch)
-Latch = $Id.Next " " ExistingLiteral "\n"
+Latch = $Literal.Next " " ExistingLiteral "\n"
 
 Outputs = *(Output)
 Output = ExistingLiteral "\n"
 
 Ands = *(And)
-And = $Id.Next " " ExistingLiteral " " ExistingLiteral "\n"
+And = $Literal.Next " " ExistingLiteral " " ExistingLiteral "\n"
 
 Header = "aag ",
          ${Inputs.Count + Latches.Count + Ands.Count} " ", // M
@@ -31,6 +44,6 @@ Body = Inputs,
        Outputs,
        Ands
 
-START = $Id.Reset,
+START = $Literal.Reset,
         Header,
         Body
