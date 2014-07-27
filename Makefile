@@ -12,5 +12,5 @@ test:
 
 	for f in *.tavor; do \
 		echo "Testfuzz $$f" ; \
-		tavor --input-file $$f ; \
+		tavor --format-file $$f fuzz ; \
 	done
