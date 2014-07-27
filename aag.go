@@ -19,6 +19,7 @@ import (
 	It fuzzes the AAG ASCII format [http://fmv.jku.at/aiger/FORMAT].
 
 	TODO it is still incomplete!
+	See aag.tavor for a more complete version
 
 */
 

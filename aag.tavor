@@ -5,7 +5,6 @@
 
   TODO it is still incomplete!
   - AND definitions have to be acyclic
-  - M does not have to be exactly I + L + A there can be unused Literals
   - Symbols table
   - Comments
 
@@ -33,7 +32,10 @@ Ands = *(And)
 And = $Literal.Next " " ExistingLiteral " " ExistingLiteral "\n"
 
 Header = "aag ",
-         ${Inputs.Count + Latches.Count + Ands.Count} " ", // M
+         (,                                                // M
+           ${Inputs.Count + Latches.Count + Ands.Count},
+         | ${Inputs.Count + Latches.Count + Ands.Count + 1}, // M does not have to be exactly I + L + A there can be unused Literals
+         ) " ",
          $Inputs.Count " ",                                // I
          $Latches.Count " " ,                              // L
          $Outputs.Count " ",                               // O
