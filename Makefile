@@ -2,8 +2,9 @@
 
 test:
 	for f in *.go; do \
-		echo "Build $$f" ; \
+		echo "Test binary $$f" ; \
 		go build -o binout -race $$f ; \
+		./binout ; \
 		rm binout ; \
 	done
 
@@ -11,6 +12,6 @@ test:
 	go install -race $(GOPATH)/src/github.com/zimmski/tavor/bin/tavor.go
 
 	for f in *.tavor; do \
-		echo "Testfuzz $$f" ; \
+		echo "Test format file $$f" ; \
 		tavor --format-file $$f fuzz ; \
 	done
