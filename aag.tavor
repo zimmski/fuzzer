@@ -6,7 +6,6 @@
   TODO it is still incomplete!
   - AND definitions have to be acyclic
   - Symbols table
-  - Comments
 
 */
 
@@ -46,6 +45,11 @@ Body = Inputs,
        Outputs,
        Ands
 
+Comments = "c\n",
+           *(Comment)
+Comment = *([\w ]) "\n"
+
 START = $Literal.Reset,
         Header,
-        Body
+        Body,
+        ?(Comments)
