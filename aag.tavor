@@ -4,7 +4,6 @@
   It describes the AAG ASCII format [http://fmv.jku.at/aiger/FORMAT].
 
   TODO it is still incomplete!
-  - AND definitions have to be acyclic
   - Symbols table
 
 */
@@ -18,6 +17,12 @@ ExistingLiteral = 0, // false
            | $Literal.Existing,
            | ${Literal.Existing + 1} // +1 means a NOT for this input
 
+ExistingLiteralAnd = 0, // false
+           | 1, // true
+           | ${Literal.Existing not in(andLiteral)},
+           | ${Literal.Existing not in(andLiteral) + 1} // +1 means a NOT for this input
+
+
 Inputs = *(Input)
 Input = $Literal.Next "\n"
 
@@ -28,7 +33,7 @@ Outputs = *(Output)
 Output = ExistingLiteral "\n"
 
 Ands = *(And)
-And = $Literal.Next " " ExistingLiteral " " ExistingLiteral "\n"
+And = $Literal.Next<andLiteral> " " ExistingLiteralAnd " " ExistingLiteralAnd "\n"
 
 Header = "aag ",
          (,                                                // M
