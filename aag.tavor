@@ -3,9 +3,6 @@
   This is a format file for the Tavor fuzzer[https://github.com/zimmski/tavor].
   It describes the AAG ASCII format [http://fmv.jku.at/aiger/FORMAT].
 
-  TODO it is still incomplete!
-  - Symbols table
-
 */
 
 $Literal = type: Sequence,
@@ -19,8 +16,8 @@ ExistingLiteral = 0, // false
 
 ExistingLiteralAnd = 0, // false
            | 1, // true
-           | ${Literal.Existing not in(andLiteral)},
-           | ${Literal.Existing not in(andLiteral) + 1} // +1 means a NOT for this input
+           | ${Literal.Existing not in (andLiteral)},
+           | ${Literal.Existing not in (andLiteral) + 1} // +1 means a NOT for this input
 
 
 Inputs = *(Input)
@@ -36,14 +33,14 @@ Ands = *(And)
 And = $Literal.Next<andLiteral> " " ExistingLiteralAnd " " ExistingLiteralAnd "\n"
 
 Header = "aag ",
-         (,                                                // M
+         (,                                                  // M
            ${Inputs.Count + Latches.Count + Ands.Count},
          | ${Inputs.Count + Latches.Count + Ands.Count + 1}, // M does not have to be exactly I + L + A there can be unused Literals
          ) " ",
-         $Inputs.Count " ",                                // I
-         $Latches.Count " " ,                              // L
-         $Outputs.Count " ",                               // O
-         $Ands.Count "\n"                                  // A
+         $Inputs.Count " ",                                  // I
+         $Latches.Count " " ,                                // L
+         $Outputs.Count " ",                                 // O
+         $Ands.Count "\n"                                    // A
 
 Body = Inputs,
        Latches,
@@ -54,7 +51,16 @@ Comments = "c\n",
            *(Comment)
 Comment = *([\w ]) "\n"
 
+Symbols = +0,$Inputs.Count(SymbolInput),
+          +0,$Latches.Count(SymbolLatch),
+          +0,$Outputs.Count(SymbolOutput)
+
+SymbolInput = "i" $Inputs.Unique<=e> $e.Index " " +([\w ]) "\n"
+SymbolLatch = "l" $Latches.Unique<=e> $e.Index " " +([\w ]) "\n"
+SymbolOutput = "o" $Outputs.Unique<=e> $e.Index " " +([\w ]) "\n"
+
 START = $Literal.Reset,
         Header,
         Body,
+        ?(Symbols),
         ?(Comments)
