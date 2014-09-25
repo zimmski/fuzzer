@@ -1,0 +1,377 @@
+
+// TODO add some boilerplate of XML 1.0 http://www.w3.org/TR/REC-xml like whitespaces
+
+START = Doc,
+        RSS
+
+Doc = "<?xml version=\"1.0\"?>"
+
+RSS = "<rss version=\"2.0\">",
+      Channel,
+      "</rss>"
+
+Channel = "<channel>",
+          @(,
+              ChannelTitle,
+            | ChannelLink,
+            | ChannelDescription,
+            | ?(ChannelLanguage),
+            | ?(ChannelCopyright),
+            | ?(ChannelManagingEditor),
+            | ?(ChannelWebMaster),
+            | ?(ChannelPubDate),
+            | ?(ChannelLastBuildDate),
+            | *(Category),
+            | ?(ChannelGenerator),
+            | ?(ChannelDocs),
+            | ?(ChannelCloud),
+            | ?(ChannelTtl),
+            | ?(ChannelImage),
+            | ?(ChannelRating),
+            | ?(ChannelTextInput),
+            | ?(ChannelSkipHours),
+            | ?(ChannelSkipDays),
+            | *(Item),
+          ),
+          "</channel>"
+
+ChannelTitle = "<title>",
+               Text,
+               "</title>"
+
+ChannelLink = "<link>",
+              URL,
+              "</link>"
+
+ChannelDescription = "<description>",
+                     Text,
+                     "</description>"
+
+ChannelLanguage = "<language>",
+                  (, // from http://www.rssboard.org/rss-language-codes
+                      "af",
+                    | "sq",/*
+                    | "eu", // TODO do not enable this for testing
+                    | "be",
+                    | "bg",
+                    | "ca",
+                    | "zh-cn",
+                    | "zh-tw",
+                    | "hr",
+                    | "cs",
+                    | "da",
+                    | "nl",
+                    | "nl-be",
+                    | "nl-nl",
+                    | "en",
+                    | "en-au",
+                    | "en-bz",
+                    | "en-ca",
+                    | "en-ie",
+                    | "en-jm",
+                    | "en-nz",
+                    | "en-ph",
+                    | "en-za",
+                    | "en-tt",
+                    | "en-gb",
+                    | "en-us",
+                    | "en-zw",
+                    | "et",
+                    | "fo",
+                    | "fi",
+                    | "fr",
+                    | "fr-be",
+                    | "fr-ca",
+                    | "fr-fr",
+                    | "fr-lu",
+                    | "fr-mc",
+                    | "fr-ch",
+                    | "gl",
+                    | "gd",
+                    | "de",
+                    | "de-at",
+                    | "de-de",
+                    | "de-li",
+                    | "de-lu",
+                    | "de-ch",
+                    | "el",
+                    | "haw",
+                    | "hu",
+                    | "is",
+                    | "in",
+                    | "ga",
+                    | "it",
+                    | "it-it",
+                    | "it-ch",
+                    | "ja",
+                    | "ko",
+                    | "mk",
+                    | "no",
+                    | "pl",
+                    | "pt",
+                    | "pt-br",
+                    | "pt-pt",
+                    | "ro",
+                    | "ro-mo",
+                    | "ro-ro",
+                    | "ru",
+                    | "ru-mo",
+                    | "ru-ru",
+                    | "sr",
+                    | "sk",
+                    | "sl",
+                    | "es",
+                    | "es-ar",
+                    | "es-bo",
+                    | "es-cl",
+                    | "es-co",
+                    | "es-cr",
+                    | "es-do",
+                    | "es-ec",
+                    | "es-sv",
+                    | "es-gt",
+                    | "es-hn",
+                    | "es-mx",
+                    | "es-ni",
+                    | "es-pa",
+                    | "es-py",
+                    | "es-pe",
+                    | "es-pr",
+                    | "es-es",
+                    | "es-uy",
+                    | "es-ve",
+                    | "sv",
+                    | "sv-fi",
+                    | "sv-se",
+                    | "tr",
+                    | "uk",*/
+                  ),
+                  "</language>"
+
+ChannelCopyright = "<copyright>",
+                   Text, // TODO should this be more strict? Like "Copyright 2002, Spartanburg Herald-Journal"
+                   "</copyright>"
+
+ChannelManagingEditor = "<managingEditor>",
+                        Email " (" FullName ")", // TODO check if this can be more diverse
+                        "</managingEditor>"
+
+ChannelWebMaster = "<webMaster>",
+                   Email " (" FullName ")", // TODO check if this can be more diverse
+                   "</webMaster>"
+
+ChannelPubDate = "<pubDate>",
+                 Date, // TODO conform to http://asg.web.cmu.edu/rfc/rfc822.html
+                 "</pubDate>"
+
+ChannelLastBuildDate = "<lastBuildDate>", // TODO I guess this must be >= to pubDate?
+                       Date,
+                       "</lastBuildDate>"
+
+ChannelGenerator = "<generator>",
+                   Text,
+                   "</generator>"
+
+ChannelDocs = "<docs>",
+              "http://www.rssboard.org/rss-specification", // TODO be more diverse?
+              "</docs>"
+
+ChannelCloud = "<cloud", // TODO http://www.rssboard.org/rsscloud-interface
+               @(,
+                   " domain=\"rpc.sys.com\"",
+                 | " port=\"80\"",
+                 | " path=\"/RPC2\"",
+                 | " registerProcedure=\"myCloud.rssPleaseNotify\"",
+                 | " protocol=\"xml-rpc\"",
+               ),
+               " />"
+
+ChannelTtl = "<ttl>",
+             $TTL.Value,
+             "</ttl>"
+$TTL = type: Int,
+       from: 1,
+       to: 1024 // TODO this can be any integer but for the sake of calculating permuations, give this a limit
+
+
+ChannelImage = "<image>",
+               @(,
+                   ChannelImageURL,
+                 | ChannelImageTitle,
+                 | ChannelImageLink,
+                 | ?(ChannelImageWidth),
+                 | ?(ChannelImageHeight),
+                 | ?(ChannelImageDescription),
+               ),
+               "</image>"
+ChannelImageURL = "<url>",
+               URLImage,
+               "</url>"
+ChannelImageTitle = "<title>",
+                    Text,
+                    "</title>"
+ChannelImageLink = "<link>",
+                    URL,
+                    "</link>"
+ChannelImageWidth = "<width>",
+                    $ImageWidth.Value,
+                    "</width>"
+$ImageWidth = type: Int, // default is 88
+              from: 1,
+              to:   144
+ChannelImageHeight = "<height>",
+                    $ImageHeight.Value,
+                    "</height>"
+$ImageHeight = type: Int, // default is 31
+               from: 1,
+               to:   400
+ChannelImageDescription = "<description>",
+                          Text,
+                          "</description>"
+
+ChannelRating = "<rating>",
+                , // TODO http://www.w3.org/PICS/
+                "</rating>"
+
+ChannelTextInput = "<textInput>",
+                   @(,
+                       ChannelTextInputTitle,
+                     | ChannelTextInputDescription,
+                     | ChannelTextInputName,
+                     | ChannelTextInputLink,
+                   ),
+                   "</textInput>"
+ChannelTextInputTitle = "<title>",
+                        Text,
+                        "</title>"
+ChannelTextInputDescription = "<description>",
+                              Text,
+                              "</description>"
+ChannelTextInputName = "<name>",
+                       Text,
+                       "</name>"
+ChannelTextInputLink = "<link>",
+                       URL,
+                       "</link>"
+
+ChannelSkipHours = "<skipHours>",
+                   @(,
+                       ?("<hour>0</hour>"),
+                     | ?("<hour>1</hour>"),
+                     | ?("<hour>2</hour>"),
+                     | ?("<hour>3</hour>"),
+                     | ?("<hour>4</hour>"),
+                     | ?("<hour>5</hour>"),
+                     | ?("<hour>6</hour>"),
+                     | ?("<hour>7</hour>"),
+                     | ?("<hour>8</hour>"),
+                     | ?("<hour>9</hour>"),
+                     | ?("<hour>10</hour>"),
+                     | ?("<hour>11</hour>"),
+                     | ?("<hour>12</hour>"),
+                     | ?("<hour>13</hour>"),
+                     | ?("<hour>14</hour>"),
+                     | ?("<hour>15</hour>"),
+                     | ?("<hour>16</hour>"),
+                     | ?("<hour>17</hour>"),
+                     | ?("<hour>18</hour>"),
+                     | ?("<hour>19</hour>"),
+                     | ?("<hour>20</hour>"),
+                     | ?("<hour>21</hour>"),
+                     | ?("<hour>22</hour>"),
+                     | ?("<hour>23</hour>"),
+                   ),
+                   "</skipHours>"
+
+ChannelSkipDays = "<skipDays>",
+                  @(,
+                      ?("<day>Monday</day>"),
+                    | ?("<day>Tuesday</day>"),
+                    | ?("<day>Wednesday</day>"),
+                    | ?("<day>Thursday</day>"),
+                    | ?("<day>Friday</day>"),
+                    | ?("<day>Saturday</day>"),
+                    | ?("<day>Sunday</day>"),
+                  ),
+                  "</skipDays>"
+
+Item = "<item>",
+       @(,
+         (, // TODO "at least one List" is not implemented in Tavor
+             ItemTitle,
+           | ItemLink,
+           | @(ItemTitle | ItemLink),
+         ),
+         | ?(ItemDescription),
+         | ?(ItemAuthor),
+         | *(Category),
+         | ?(ItemComments),
+         | ?(ItemEnclosure),
+         | ?(ItemGuid),
+         | ?(ItemPubDate),
+         | ?(ItemSource),
+       ),
+       "</item>"
+
+ItemTitle = "<title>",
+            Text,
+            "</title>"
+
+ItemLink = "<link>",
+           URL,
+           "</link>"
+
+ItemDescription = "<description>",
+                  Text, // TODO http://www.rssboard.org/rss-encoding-examples
+                  "</description>"
+
+ItemAuthor = "<author>",
+             Email " (" FullName ")", // TODO check if this can be more diverse
+             "</author>"
+
+ItemComments = "<comments>",
+               URL, // TODO http://www.rssboard.org/rss-weblog-comments-use-case
+               "</comments>"
+
+ItemEnclosure = "<enclosure", // TODO http://www.rssboard.org/rss-enclosures-use-case
+                  " url=\"http://www.scripting.com/mp3s/weatherReportSuite.mp3\"",
+                  " length=\"12216320\"",
+                  " type=\"audio/mpeg\"",
+                " />"
+
+ItemGuid = (,
+               "<guid>" URL "</guid>",
+             | "<guid isPermaLink=\"true\">" URL "</guid>",
+             | "<guid isPermaLink=\"false\">" Text "</guid>",
+           )
+
+ItemPubDate = "<pubDate>",
+              Date,
+              "</pubDate>"
+
+ItemSource = "<source",
+               "url=\"" URL "\"",
+             ">",
+             Text,
+             "</source>"
+
+/*
+ * Common RSS tags
+ */
+
+Category = "<category",
+             ?(" domain=\"" URL "\""),
+           ">",
+           Text,
+           "</category>"
+
+/*
+ * Helpers
+ */
+
+Date = "Sat, 07 Sep 2002 00:00:01 GMT" // TODO conform to http://asg.web.cmu.edu/rfc/rfc822.html
+Email = "test@test.com" // TODO be more diverse
+FullName = "Rodriguez Test" // TODO be more diverse
+Text = +([\w]) // TODO be more diverse
+URL = "TODO"
+URLImage = "TODO can be gif, jpeg or png" // TODO really just this?
