@@ -1,5 +1,10 @@
 
-// TODO add some boilerplate of XML 1.0 http://www.w3.org/TR/REC-xml like whitespaces
+/*
+ ** TODO
+
+ - add some boilerplate of XML 1.0 http://www.w3.org/TR/REC-xml like whitespaces
+
+ */
 
 START = Doc,
         RSS
@@ -50,12 +55,12 @@ ChannelDescription = "<description>",
 ChannelLanguage = "<language>",
                   (, // from http://www.rssboard.org/rss-language-codes
                       "af",
-                    | "sq",/*
-                    | "eu", // TODO do not enable this for testing
+                    | "sq",
+                    | "zh-cn",/* TODO do not enable this for testing
+                    | "eu",
                     | "be",
                     | "bg",
                     | "ca",
-                    | "zh-cn",
                     | "zh-tw",
                     | "hr",
                     | "cs",
@@ -153,15 +158,15 @@ ChannelCopyright = "<copyright>",
                    "</copyright>"
 
 ChannelManagingEditor = "<managingEditor>",
-                        Email " (" FullName ")", // TODO check if this can be more diverse
+                        Author,
                         "</managingEditor>"
 
 ChannelWebMaster = "<webMaster>",
-                   Email " (" FullName ")", // TODO check if this can be more diverse
+                   Author,
                    "</webMaster>"
 
 ChannelPubDate = "<pubDate>",
-                 Date, // TODO conform to http://asg.web.cmu.edu/rfc/rfc822.html
+                 Date,
                  "</pubDate>"
 
 ChannelLastBuildDate = "<lastBuildDate>", // TODO I guess this must be >= to pubDate?
@@ -297,7 +302,7 @@ ChannelSkipDays = "<skipDays>",
 
 Item = "<item>",
        @(,
-         (, // TODO "at least one List" is not implemented in Tavor
+         (, // https://github.com/zimmski/tavor/issues/7
              ItemTitle,
            | ItemLink,
            | @(ItemTitle | ItemLink),
@@ -326,7 +331,7 @@ ItemDescription = "<description>",
                   "</description>"
 
 ItemAuthor = "<author>",
-             Email " (" FullName ")", // TODO check if this can be more diverse
+             Author,
              "</author>"
 
 ItemComments = "<comments>",
@@ -369,6 +374,7 @@ Category = "<category",
  * Helpers
  */
 
+Author = Email " (" FullName ")" // TODO check if this can be more diverse
 Date = "Sat, 07 Sep 2002 00:00:01 GMT" // TODO conform to http://asg.web.cmu.edu/rfc/rfc822.html
 Email = "test@test.com" // TODO be more diverse
 FullName = "Rodriguez Test" // TODO be more diverse
