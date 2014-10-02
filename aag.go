@@ -41,8 +41,8 @@ func main() {
 		primitives.NewConstantInt(0),
 		primitives.NewConstantInt(1),
 		lists.NewOne(
-			literalSequence.ExistingItem(),
-			expressions.NewAddArithmetic(literalSequence.ExistingItem(), primitives.NewConstantInt(1)),
+			literalSequence.ExistingItem(nil),
+			expressions.NewAddArithmetic(literalSequence.ExistingItem(nil), primitives.NewConstantInt(1)),
 		),
 	)
 
