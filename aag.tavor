@@ -1,7 +1,9 @@
 /*
 
-  This is a format file for the Tavor fuzzer[https://github.com/zimmski/tavor].
-  It describes the AAG ASCII format [http://fmv.jku.at/aiger/FORMAT].
+AAG tavor format based on http://fmv.jku.at/aiger/FORMAT
+
+TODO
+- do not allow literal AND cycles over more than one And
 
 */
 
