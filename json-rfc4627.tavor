@@ -9,18 +9,18 @@ START = Object | Array
 Array = beginArray,
           ?(,
              Value,
-                *(valueSeparator Value),
+             *(valueSeparator Value),
            ),
         endArray
 
 Object = beginObject,
            ?(,
-                 Member,
-                 *(valueSeparator Member),
-               ),
+              Member,
+              *(valueSeparator Member),
+            ),
          endObject
 
-Member = String, // Member name, should be unique per object but must not
+Member = String, // Member name, should be unique per object
          nameSeparator,
          Value
 
