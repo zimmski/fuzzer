@@ -9,15 +9,15 @@ START = Object | Array
 Array = beginArray,
           ?(,
              Value,
-           	 *(valueSeparator Value),
+                *(valueSeparator Value),
            ),
         endArray
 
 Object = beginObject,
            ?(,
-           	  Member,
-           	  *(valueSeparator Member),
-           	),
+                 Member,
+                 *(valueSeparator Member),
+               ),
          endObject
 
 Member = String, // Member name, should be unique per object but must not
@@ -31,16 +31,16 @@ String = "\"" *(Char) "\""
 Char = CharUnescaped | CharEscaped
 CharUnescaped = [\x20-21] | [\x23-5B] | [\x5D-10FFFF]
 CharEscaped = "\\" (,
-	                   "\"", // quotation mark
-	                 | "\\", // reverse solidus
-	                 | "\/", // solidus
-	                 | "\b", // backspace
-	                 | "\f", // form feed
-	                 | "\n", // line feed
-	                 | "\r", // carriage return
-	                 | "\t", // tab
-	                 | "u" +4([a-zA-Z0-9])
-	               )
+                       "\"", // quotation mark
+                     | "\\", // reverse solidus
+                     | "\/", // solidus
+                     | "\b", // backspace
+                     | "\f", // form feed
+                     | "\n", // line feed
+                     | "\r", // carriage return
+                     | "\t", // tab
+                     | "u" +4([a-zA-Z0-9])
+                   )
 
 Value = Object,
       | Array,
