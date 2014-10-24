@@ -29,17 +29,17 @@ Number = ?("-") (0 | [1-9]*([0-9])) ?("." +([0-9])) ?([eE] ?("-" | "+") +([0-9])
 String = "\"" *(Char) "\""
 
 Char = CharUnescaped | CharEscaped
-CharUnescaped = [\x20-21] | [\x23-5B] | [\x5D-10FFFF] // 10FFFF -> 21bit of unicode
+CharUnescaped = [\x20-\x21] | [\x23-\x5B] | [\x5D-\x{10FFFF}] // 10FFFF -> 21bit of unicode
 CharEscaped = "\\" (,
-                       "\"", // quotation mark
-                     | "\\", // reverse solidus
-                     | "\/", // solidus
-                     | "\b", // backspace
-                     | "\f", // form feed
-                     | "\n", // line feed
-                     | "\r", // carriage return
-                     | "\t", // tab
-                     | "u" +4([a-fA-F0-9]), // 4 hex digits
+                     "\"", // quotation mark
+                   | "\\", // reverse solidus
+                   | "/", // solidus
+                   | "b", // backspace
+                   | "f", // form feed
+                   | "n", // line feed
+                   | "r", // carriage return
+                   | "t", // tab
+                   | "u" +4([a-fA-F0-9]), // 4 hex digits
                    )
 
 Value = Object,
