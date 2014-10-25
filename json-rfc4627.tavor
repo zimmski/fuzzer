@@ -59,4 +59,4 @@ endObject      = WS "}" WS
 nameSeparator  = WS ":" WS
 valueSeparator = WS "," WS
 
-WS = ?([ \t\n\r])
+WS = *([ \t\n\r])
