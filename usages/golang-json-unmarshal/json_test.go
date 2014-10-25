@@ -1,4 +1,4 @@
-package main
+package json
 
 import (
 	"encoding/json"
@@ -7,14 +7,15 @@ import (
 	"os"
 	"reflect"
 	"strings"
+	"testing"
 	"time"
 
 	"github.com/zimmski/tavor/fuzz/strategy"
 	"github.com/zimmski/tavor/parser"
 )
 
-func main() {
-	file, err := os.Open(os.Args[1])
+func TestJson(t *testing.T) {
+	file, err := os.Open("./../../json-rfc7159.minimal.tavor")
 	if err != nil {
 		panic(fmt.Sprintf("cannot open tavor file %s: %v", os.Args[1], err))
 	}
