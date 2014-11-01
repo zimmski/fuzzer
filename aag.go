@@ -5,8 +5,12 @@ import (
 	"math/rand"
 	"time"
 
+	"github.com/jessevdk/go-flags"
+
 	"github.com/zimmski/tavor"
 	"github.com/zimmski/tavor/fuzz/strategy"
+	"github.com/zimmski/tavor/log"
+	"github.com/zimmski/tavor/token"
 	"github.com/zimmski/tavor/token/aggregates"
 	"github.com/zimmski/tavor/token/constraints"
 	"github.com/zimmski/tavor/token/expressions"
@@ -25,7 +29,7 @@ import (
 
 */
 
-func main() {
+func aagToken() token.Token {
 	// constants
 	maxRepeat := int64(tavor.MaxRepeat)
 
@@ -208,12 +212,30 @@ func main() {
 		constraints.NewOptional(comments),
 	)
 
-	// fuzz and output the document
-	r := rand.New(rand.NewSource(time.Now().UTC().UnixNano()))
+	return doc
+}
 
-	strat := strategy.NewRandomStrategy(doc)
+func main() {
+	var opts struct {
+		Seed int64 `long:"seed" description:"Seed for all the randomness"`
+	}
 
-	ch, err := strat.Fuzz(r)
+	p := flags.NewParser(&opts, flags.None)
+
+	_, err := p.Parse()
+	if err != nil {
+		panic(err)
+	}
+
+	if opts.Seed == 0 {
+		opts.Seed = time.Now().UTC().UnixNano()
+	}
+
+	log.Infof("using seed %d", opts.Seed)
+
+	doc := aagToken()
+
+	ch, err := strategy.NewRandomStrategy(doc).Fuzz(rand.New(rand.NewSource(opts.Seed)))
 	if err != nil {
 		panic(err)
 	}
