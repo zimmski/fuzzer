@@ -2,15 +2,18 @@ package main
 
 import (
 	"fmt"
-	randMath "math/rand"
-	"strconv"
+	"math/rand"
 	"time"
 
+	"github.com/zimmski/tavor"
+	"github.com/zimmski/tavor/fuzz/strategy"
 	"github.com/zimmski/tavor/token/aggregates"
+	"github.com/zimmski/tavor/token/constraints"
 	"github.com/zimmski/tavor/token/expressions"
 	"github.com/zimmski/tavor/token/lists"
 	"github.com/zimmski/tavor/token/primitives"
 	"github.com/zimmski/tavor/token/sequences"
+	"github.com/zimmski/tavor/token/variables"
 )
 
 /*
@@ -18,17 +21,13 @@ import (
 	This is a fuzzer made using Tavor[https://github.com/zimmski/tavor].
 	It fuzzes the AAG ASCII format [http://fmv.jku.at/aiger/FORMAT].
 
-	TODO it is still incomplete!
-	See aag.tavor for a more complete version
+	See aag.tavor for the corresponding Tavor format file.
 
 */
 
 func main() {
 	// constants
-	var maxInputCount int64 = 5
-	var maxLatchCount int64 = 5
-	var maxOutputCount int64 = 5
-	var maxAndCount int64 = 5
+	maxRepeat := int64(tavor.MaxRepeat)
 
 	// special tokens
 	ws := primitives.NewConstantString(" ")
@@ -37,7 +36,7 @@ func main() {
 	// construct body parts
 	literalSequence := sequences.NewSequence(2, 2)
 
-	inputLiteral := lists.NewOne(
+	existingLiteral := lists.NewOne(
 		primitives.NewConstantInt(0),
 		primitives.NewConstantInt(1),
 		lists.NewOne(
@@ -50,42 +49,58 @@ func main() {
 		literalSequence.Item(),
 		nl,
 	)
-	inputList := lists.NewRepeat(input, 0, maxInputCount)
+	inputList := lists.NewRepeat(input, 0, maxRepeat)
 
 	latch := lists.NewAll(
 		literalSequence.Item(),
 		ws,
-		inputLiteral.Clone(),
+		existingLiteral.Clone(),
 		nl,
 	)
-	latchList := lists.NewRepeat(latch, 0, maxLatchCount)
+	latchList := lists.NewRepeat(latch, 0, maxRepeat)
 
 	output := lists.NewAll(
-		inputLiteral.Clone(),
+		existingLiteral.Clone(),
 		nl,
 	)
-	outputList := lists.NewRepeat(output, 0, maxOutputCount)
+	outputList := lists.NewRepeat(output, 0, maxRepeat)
+
+	andLiteral := variables.NewVariable("andLiteral", literalSequence.Item())
+
+	existingLiteralAnd := lists.NewOne(
+		primitives.NewConstantInt(0),
+		primitives.NewConstantInt(1),
+		lists.NewOne(
+			literalSequence.ExistingItem(variables.NewVariableValue(andLiteral)),
+			expressions.NewAddArithmetic(literalSequence.ExistingItem(variables.NewVariableValue(andLiteral)), primitives.NewConstantInt(1)),
+		),
+	)
+
+	/* TODO
+	   - do not allow literal AND cycles over more than one And
+	*/
 
 	and := lists.NewAll(
-		literalSequence.Item(),
+		andLiteral,
 		ws,
-		inputLiteral.Clone(),
+		existingLiteralAnd.Clone(),
 		ws,
-		inputLiteral.Clone(),
+		existingLiteralAnd.Clone(),
 		nl,
 	)
-	andList := lists.NewRepeat(and, 0, maxAndCount)
+	andList := lists.NewRepeat(and, 0, maxRepeat)
 
 	// head
 	docType := primitives.NewConstantString("aag")
 
-	maxVariableIndex := expressions.NewFuncExpression(func() string {
-		return strconv.Itoa(inputList.Len() + latchList.Len() + andList.Len())
-	})
 	numberOfInputs := aggregates.NewLen(inputList)
 	numberOfLatches := aggregates.NewLen(latchList)
 	numberOfOutputs := aggregates.NewLen(outputList)
 	numberOfAnds := aggregates.NewLen(andList)
+	maxVariableIndex := lists.NewOne(
+		expressions.NewAddArithmetic(numberOfInputs.Clone(), expressions.NewAddArithmetic(numberOfLatches.Clone(), numberOfAnds.Clone())),
+		expressions.NewAddArithmetic(numberOfInputs.Clone(), expressions.NewAddArithmetic(numberOfLatches.Clone(), expressions.NewAddArithmetic(numberOfAnds.Clone(), primitives.NewConstantInt(1)))), // M does not have to be exactly I + L + A there can be unused Literals
+	)
 
 	header := lists.NewAll(
 		docType, ws,
@@ -104,18 +119,108 @@ func main() {
 		andList,
 	)
 
+	// symbols
+	vi := variables.NewVariableSave("e", lists.NewUniqueItem(inputList))
+	symbolInput := lists.NewAll(
+		primitives.NewConstantString("i"),
+		vi,
+		lists.NewIndexItem(variables.NewVariableValue(vi)),
+		primitives.NewConstantString(" "),
+		lists.NewRepeat(
+			primitives.NewCharacterClass("\\w "),
+			1,
+			maxRepeat,
+		),
+		primitives.NewConstantString("\n"),
+	)
+
+	vl := variables.NewVariableSave("e", lists.NewUniqueItem(latchList))
+	symbolLatch := lists.NewAll(
+		primitives.NewConstantString("l"),
+		vl,
+		lists.NewIndexItem(variables.NewVariableValue(vl)),
+		primitives.NewConstantString(" "),
+		lists.NewRepeat(
+			primitives.NewCharacterClass("\\w "),
+			1,
+			maxRepeat,
+		),
+		primitives.NewConstantString("\n"),
+	)
+
+	vo := variables.NewVariableSave("e", lists.NewUniqueItem(outputList))
+	symbolOutput := lists.NewAll(
+		primitives.NewConstantString("o"),
+		vo,
+		lists.NewIndexItem(variables.NewVariableValue(vo)),
+		primitives.NewConstantString(" "),
+		lists.NewRepeat(
+			primitives.NewCharacterClass("\\w "),
+			1,
+			maxRepeat,
+		),
+		primitives.NewConstantString("\n"),
+	)
+
+	symbols := lists.NewAll(
+		lists.NewRepeatWithTokens(
+			symbolInput,
+			primitives.NewConstantInt(0),
+			aggregates.NewLen(inputList),
+		),
+		lists.NewRepeatWithTokens(
+			symbolLatch,
+			primitives.NewConstantInt(0),
+			aggregates.NewLen(latchList),
+		),
+		lists.NewRepeatWithTokens(
+			symbolOutput,
+			primitives.NewConstantInt(0),
+			aggregates.NewLen(outputList),
+		),
+	)
+
+	// comments
+	comment := lists.NewAll(
+		lists.NewRepeat(
+			primitives.NewCharacterClass("\\w "),
+			1,
+			maxRepeat,
+		),
+		primitives.NewConstantString("\n"),
+	)
+
+	comments := lists.NewAll(
+		primitives.NewConstantString("c\n"),
+		lists.NewRepeat(
+			comment,
+			0,
+			maxRepeat,
+		),
+	)
+
 	// doc
 	doc := lists.NewAll(
 		literalSequence.ResetItem(),
 		header,
 		body,
+		constraints.NewOptional(symbols),
+		constraints.NewOptional(comments),
 	)
 
-	// fuzz the document
-	r := randMath.New(randMath.NewSource(time.Now().UTC().UnixNano()))
+	// fuzz and output the document
+	r := rand.New(rand.NewSource(time.Now().UTC().UnixNano()))
 
-	doc.FuzzAll(r)
+	strat := strategy.NewRandomStrategy(doc)
 
-	// output
-	fmt.Print(doc.String())
+	ch, err := strat.Fuzz(r)
+	if err != nil {
+		panic(err)
+	}
+
+	for i := range ch {
+		fmt.Print(doc.String())
+
+		ch <- i
+	}
 }
