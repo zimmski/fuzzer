@@ -70,13 +70,61 @@ func aagToken() token.Token {
 	outputList := lists.NewRepeat(output, 0, maxRepeat)
 
 	andLiteral := variables.NewVariable("andLiteral", literalSequence.Item())
+	/*
+		checkForAndCycle := func(currentLiteral int, checkLiteral int) bool {
+			if checkLiteral == 0 || checkLiteral == 1 {
+				return false
+			}
 
+			// TODO maybe do something like this in the Tavor format? https://stackoverflow.com/questions/3440840/postgresql-sql-or-pl-pgsql-query-for-traversing-a-directed-graph-and-returning-a
+
+			checked := make(map[int]struct{})
+			checked[checkLiteral] = struct{}{}
+			stack := linkedlist.New()
+			stack.Push(checkLiteral)
+
+			for !stack.Empty() {
+				v, _ := stack.Pop()
+				c := v.(int)
+
+				c = (c / 2) * 2
+
+				// find and
+				var and *And
+				for _, v := range ands {
+					if v.ID == c {
+						and = &v
+
+						break
+					}
+				}
+				if and == nil {
+					continue
+				}
+
+				if and.ID == currentLiteral {
+					return true
+				}
+
+				for _, v := range []int{and.a, and.b} {
+					if v != 0 && v != 1 {
+						if _, ok := checked[v]; !ok {
+							stack.Push(v)
+							checked[v] = struct{}{}
+						}
+					}
+				}
+			}
+
+			return false
+		}
+	*/
 	existingLiteralAnd := lists.NewOne(
 		primitives.NewConstantInt(0),
 		primitives.NewConstantInt(1),
 		lists.NewOne(
-			literalSequence.ExistingItem(variables.NewVariableValue(andLiteral)),
-			expressions.NewAddArithmetic(literalSequence.ExistingItem(variables.NewVariableValue(andLiteral)), primitives.NewConstantInt(1)),
+			literalSequence.ExistingItem([]token.Token{variables.NewVariableValue(andLiteral)}),
+			expressions.NewAddArithmetic(literalSequence.ExistingItem([]token.Token{variables.NewVariableValue(andLiteral)}), primitives.NewConstantInt(1)),
 		),
 	)
 

@@ -9,7 +9,7 @@ test:
 	done
 
 	echo "Build tavor with race detection"
-	go install -race $(GOPATH)/src/github.com/zimmski/tavor/bin/tavor.go
+	make -C $(GOPATH)/src/github.com/zimmski/tavor debug-install
 
 	for f in *.tavor; do \
 		echo "Test format file $$f" ; \
