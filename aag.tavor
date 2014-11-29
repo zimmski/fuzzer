@@ -7,9 +7,8 @@ TODO
 
 */
 
-$Literal = type: Sequence,
-           start: 2,
-           step: 2
+$Literal Sequence = start: 2,
+                    step: 2
 
 ExistingLiteral = 0, // false
                 | 1, // true

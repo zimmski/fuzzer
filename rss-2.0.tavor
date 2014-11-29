@@ -196,9 +196,8 @@ ChannelCloud = "<cloud", // TODO http://www.rssboard.org/rsscloud-interface
 ChannelTtl = "<ttl>",
              $TTL.Value,
              "</ttl>"
-$TTL = type: Int,
-       from: 1,
-       to: 1024 // TODO this can be any integer but for the sake of calculating permuations, give this a limit
+$TTL Int = from: 1,
+           to: 1024 // TODO this can be any integer but for the sake of calculating permuations, give this a limit
 
 
 ChannelImage = "<image>",
@@ -223,15 +222,13 @@ ChannelImageLink = "<link>",
 ChannelImageWidth = "<width>",
                     $ImageWidth.Value,
                     "</width>"
-$ImageWidth = type: Int, // default is 88
-              from: 1,
-              to:   144
+$ImageWidth Int = from: 1,
+                  to:   144
 ChannelImageHeight = "<height>",
                     $ImageHeight.Value,
                     "</height>"
-$ImageHeight = type: Int, // default is 31
-               from: 1,
-               to:   400
+$ImageHeight Int = from: 1,
+                   to:   400
 ChannelImageDescription = "<description>",
                           Text,
                           "</description>"
