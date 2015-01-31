@@ -81,10 +81,10 @@ func aagToken() token.Token {
 			checked := make(map[int]struct{})
 			checked[checkLiteral] = struct{}{}
 			stack := linkedlist.New()
-			stack.Push(checkLiteral)
+			stack.Unshift(checkLiteral)
 
 			for !stack.Empty() {
-				v, _ := stack.Pop()
+				v, _ := stack.Shift()
 				c := v.(int)
 
 				c = (c / 2) * 2
@@ -106,10 +106,10 @@ func aagToken() token.Token {
 					return true
 				}
 
-				for _, v := range []int{and.a, and.b} {
+				for _, v := range []int{and.b, and.a} {
 					if v != 0 && v != 1 {
 						if _, ok := checked[v]; !ok {
-							stack.Push(v)
+							stack.Unshift(v)
 							checked[v] = struct{}{}
 						}
 					}
