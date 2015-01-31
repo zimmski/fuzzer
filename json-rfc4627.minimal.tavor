@@ -57,11 +57,9 @@ Value = Object,
 
 // Helper
 
-beginArray     = WS "[" WS
-beginObject    = WS "{" WS
-endArray       = WS "]" WS
-endObject      = WS "}" WS
-nameSeparator  = WS ":" WS
-valueSeparator = WS "," WS
-
-WS = "" // *([ \t\n\r])
+beginArray     = "["
+beginObject    = "{"
+endArray       = "]"
+endObject      = "}"
+nameSeparator  = ":"
+valueSeparator = ","
