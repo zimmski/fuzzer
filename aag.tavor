@@ -2,9 +2,6 @@
 
 AAG tavor format based on http://fmv.jku.at/aiger/FORMAT
 
-TODO
-- do not allow literal AND cycles over more than one And
-
 */
 
 $Literal Sequence = start: 2,
@@ -17,9 +14,11 @@ ExistingLiteral = 0, // false
 
 ExistingLiteralAnd = 0, // false
                    | 1, // true
-                   | ${Literal.Existing not in (andLiteral)},
-                   | ${Literal.Existing not in (andLiteral) + 1} // +1 means a NOT for this input
+                   | ${Literal.Existing not in (AndCycle)},
+                   | ${Literal.Existing not in (AndCycle) + 1} // +1 means a NOT for this input
 
+// AndCycle finds all paths beginning from the variable andLiteral
+AndCycle = ${andList.Reference path from (andLiteral) over (e.Item(0)) connect by (e.Item(2) / 2 * 2, e.Item(4) / 2 * 2) without (0, 1)}
 
 Inputs = *(Input)
 Input = $Literal.Next "\n"
@@ -46,7 +45,7 @@ Header = "aag ",
 Body = Inputs,
        Latches,
        Outputs,
-       Ands
+       Ands<andList>
 
 Comments = "c\n",
            *(Comment)
