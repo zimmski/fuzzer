@@ -69,68 +69,35 @@ func aagToken() token.Token {
 	)
 	outputList := lists.NewRepeat(output, 0, maxRepeat)
 
+	andListVar := variables.NewVariableReference(variables.NewVariable("andList", nil))
+	andListVarEntry := variables.NewVariable("e", nil)
 	andLiteral := variables.NewVariable("andLiteral", literalSequence.Item())
-	/*
-		checkForAndCycle := func(currentLiteral int, checkLiteral int) bool {
-			if checkLiteral == 0 || checkLiteral == 1 {
-				return false
-			}
 
-			// TODO maybe do something like this in the Tavor format? https://stackoverflow.com/questions/3440840/postgresql-sql-or-pl-pgsql-query-for-traversing-a-directed-graph-and-returning-a
+	andCycle, err := expressions.NewPath(
+		andListVar,
+		variables.NewVariableValue(andLiteral),
+		variables.NewVariableItem(primitives.NewConstantInt(0), andListVarEntry),
+		[]token.Token{
+			expressions.NewMulArithmetic(expressions.NewDivArithmetic(variables.NewVariableItem(primitives.NewConstantInt(2), andListVarEntry), primitives.NewConstantInt(2)), primitives.NewConstantInt(2)),
+			expressions.NewMulArithmetic(expressions.NewDivArithmetic(variables.NewVariableItem(primitives.NewConstantInt(4), andListVarEntry), primitives.NewConstantInt(2)), primitives.NewConstantInt(2)),
+		},
+		[]token.Token{
+			primitives.NewConstantInt(0),
+			primitives.NewConstantInt(1),
+		},
+	)
+	if err != nil {
+		panic(err)
+	}
 
-			checked := make(map[int]struct{})
-			checked[checkLiteral] = struct{}{}
-			stack := linkedlist.New()
-			stack.Unshift(checkLiteral)
-
-			for !stack.Empty() {
-				v, _ := stack.Shift()
-				c := v.(int)
-
-				c = (c / 2) * 2
-
-				// find and
-				var and *And
-				for _, v := range ands {
-					if v.ID == c {
-						and = &v
-
-						break
-					}
-				}
-				if and == nil {
-					continue
-				}
-
-				if and.ID == currentLiteral {
-					return true
-				}
-
-				for _, v := range []int{and.b, and.a} {
-					if v != 0 && v != 1 {
-						if _, ok := checked[v]; !ok {
-							stack.Unshift(v)
-							checked[v] = struct{}{}
-						}
-					}
-				}
-			}
-
-			return false
-		}
-	*/
 	existingLiteralAnd := lists.NewOne(
 		primitives.NewConstantInt(0),
 		primitives.NewConstantInt(1),
 		lists.NewOne(
-			literalSequence.ExistingItem([]token.Token{variables.NewVariableValue(andLiteral)}),
-			expressions.NewAddArithmetic(literalSequence.ExistingItem([]token.Token{variables.NewVariableValue(andLiteral)}), primitives.NewConstantInt(1)),
+			literalSequence.ExistingItem([]token.Token{andCycle.Clone()}),
+			expressions.NewAddArithmetic(literalSequence.ExistingItem([]token.Token{andCycle.Clone()}), primitives.NewConstantInt(1)),
 		),
 	)
-
-	/* TODO
-	   - do not allow literal AND cycles over more than one And
-	*/
 
 	and := lists.NewAll(
 		andLiteral,
@@ -168,7 +135,7 @@ func aagToken() token.Token {
 		inputList,
 		latchList,
 		outputList,
-		andList,
+		variables.NewVariable("andList", primitives.NewScope(andList)),
 	)
 
 	// symbols
