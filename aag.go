@@ -250,7 +250,7 @@ func main() {
 
 	doc := aagToken()
 
-	ch, err := strategy.NewRandomStrategy(doc).Fuzz(rand.New(rand.NewSource(opts.Seed)))
+	ch, err := strategy.NewRandom(doc, rand.New(rand.NewSource(opts.Seed)))
 	if err != nil {
 		panic(err)
 	}
