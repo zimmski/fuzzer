@@ -49,13 +49,13 @@ func aagToken() token.Token {
 		),
 	)
 
-	input := lists.NewAll(
+	input := lists.NewConcatenation(
 		literalSequence.Item(),
 		nl,
 	)
 	inputList := lists.NewRepeat(input, 0, maxRepeat)
 
-	latch := lists.NewAll(
+	latch := lists.NewConcatenation(
 		literalSequence.Item(),
 		ws,
 		existingLiteral.Clone(),
@@ -63,7 +63,7 @@ func aagToken() token.Token {
 	)
 	latchList := lists.NewRepeat(latch, 0, maxRepeat)
 
-	output := lists.NewAll(
+	output := lists.NewConcatenation(
 		existingLiteral.Clone(),
 		nl,
 	)
@@ -99,7 +99,7 @@ func aagToken() token.Token {
 		),
 	)
 
-	and := lists.NewAll(
+	and := lists.NewConcatenation(
 		andLiteral,
 		ws,
 		existingLiteralAnd.Clone(),
@@ -121,7 +121,7 @@ func aagToken() token.Token {
 		expressions.NewAddArithmetic(numberOfInputs.Clone(), expressions.NewAddArithmetic(numberOfLatches.Clone(), expressions.NewAddArithmetic(numberOfAnds.Clone(), primitives.NewConstantInt(1)))), // M does not have to be exactly I + L + A there can be unused Literals
 	)
 
-	header := lists.NewAll(
+	header := lists.NewConcatenation(
 		docType, ws,
 		maxVariableIndex, ws,
 		numberOfInputs, ws,
@@ -131,7 +131,7 @@ func aagToken() token.Token {
 	)
 
 	// body
-	body := lists.NewAll(
+	body := lists.NewConcatenation(
 		inputList,
 		latchList,
 		outputList,
@@ -140,7 +140,7 @@ func aagToken() token.Token {
 
 	// symbols
 	vi := variables.NewVariableSave("e", lists.NewUniqueItem(inputList))
-	symbolInput := lists.NewAll(
+	symbolInput := lists.NewConcatenation(
 		primitives.NewConstantString("i"),
 		vi,
 		lists.NewIndexItem(variables.NewVariableValue(vi)),
@@ -154,7 +154,7 @@ func aagToken() token.Token {
 	)
 
 	vl := variables.NewVariableSave("e", lists.NewUniqueItem(latchList))
-	symbolLatch := lists.NewAll(
+	symbolLatch := lists.NewConcatenation(
 		primitives.NewConstantString("l"),
 		vl,
 		lists.NewIndexItem(variables.NewVariableValue(vl)),
@@ -168,7 +168,7 @@ func aagToken() token.Token {
 	)
 
 	vo := variables.NewVariableSave("e", lists.NewUniqueItem(outputList))
-	symbolOutput := lists.NewAll(
+	symbolOutput := lists.NewConcatenation(
 		primitives.NewConstantString("o"),
 		vo,
 		lists.NewIndexItem(variables.NewVariableValue(vo)),
@@ -181,7 +181,7 @@ func aagToken() token.Token {
 		primitives.NewConstantString("\n"),
 	)
 
-	symbols := lists.NewAll(
+	symbols := lists.NewConcatenation(
 		lists.NewRepeatWithTokens(
 			symbolInput,
 			primitives.NewConstantInt(0),
@@ -200,7 +200,7 @@ func aagToken() token.Token {
 	)
 
 	// comments
-	comment := lists.NewAll(
+	comment := lists.NewConcatenation(
 		lists.NewRepeat(
 			primitives.NewCharacterClass("\\w "),
 			1,
@@ -209,7 +209,7 @@ func aagToken() token.Token {
 		primitives.NewConstantString("\n"),
 	)
 
-	comments := lists.NewAll(
+	comments := lists.NewConcatenation(
 		primitives.NewConstantString("c\n"),
 		lists.NewRepeat(
 			comment,
@@ -219,7 +219,7 @@ func aagToken() token.Token {
 	)
 
 	// doc
-	doc := lists.NewAll(
+	doc := lists.NewConcatenation(
 		literalSequence.ResetItem(),
 		header,
 		body,
